@@ -1,0 +1,39 @@
+/* File: public/style.css */
+
+body {
+    background-color: #f0f8ff;
+}
+
+h1 {
+    font-family: 'Comic Sans MS', sans-serif;
+    color: #ff4500;
+}
+
+h3 {
+    font-family: 'Arial', sans-serif;
+}
+
+button {
+    margin: 5px;
+}
+
+#word-state {
+    font-size: 2rem;
+    letter-spacing: 0.5rem;
+}
+
+#result-section {
+    margin-top: 20px;
+}
+
+#result-message {
+    font-size: 1.5rem;
+    color: #28a745;
+}
+
+#hangman-image {
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    padding: 5px;
+    margin-bottom: 20px;
+}
