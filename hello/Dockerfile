@@ -1,17 +1,26 @@
-# Use Alpine Linux as the base image
-FROM alpine:3
+# Stage 1: Build the C++ program using Alpine
+FROM alpine:3 AS builder
 
-# Install gcc, g++, and make, along with required libraries
-RUN apk add --no-cache gcc g++ make libc-dev
+# Install g++ and necessary build tools
+RUN apk add --no-cache g++ make
 
-# Set the working directory inside the container
-WORKDIR /app
+# Set working directory
+WORKDIR /usr/src/app
 
-# Copy the C++ source code to the container
+# Copy source file into container
 COPY hello.cpp .
 
-# Compile the C++ program
-RUN g++ -o hello.exe hello.cpp
+# Compile with optimization (-O2) and static linking (musl)
+RUN g++ -O2 -static -o hello hello.cpp
 
-# Command to run the compiled program
-CMD ["./hello.exe"]
+# Stage 2: Create a minimal runtime image using Alpine
+FROM alpine:3
+
+# Set working directory
+WORKDIR /app
+
+# Copy only the compiled binary from the builder stage
+COPY --from=builder /usr/src/app/hello .
+
+# Run the compiled binary
+CMD ["./hello"]

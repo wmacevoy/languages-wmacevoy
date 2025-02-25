@@ -158,8 +158,9 @@ app.post('/admin/words', async (req, res) => {
   const { words } = req.body; // Expects an array of words
   try {
     await pool.query('TRUNCATE TABLE words');
-    const insertValues = words.map(word => `('${word}')`).join(', ');
-    await pool.query(`INSERT INTO words (word) VALUES ${insertValues}`);
+    words.each(async (word)=>{
+      await pool.query('INSERT INTO words (word) VALUES ($1)',[word]);
+    })
     res.status(201).json({ message: 'Words updated successfully' });
   } catch (error) {
     res.status(400).json({ error: error.message });
