@@ -1,0 +1,62 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '3000:3000'
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@db:5432/hangman_db
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+    command: ["bash","-c","npm install && npm run dev"]  # Run the dev server with nodemon
+    container_name: hangman-app
+
+  test-runner:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@test-db:5432/hangman_test_db
+      - NODE_ENV=test
+    volumes:
+      - .:/app
+    depends_on:
+      - test-db
+      - app
+    command: ["npx", "jest", "--watchAll"]  # Continuous test execution
+    container_name: hangman-test-runner
+
+  db:
+    image: postgres:13
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: hangman_db
+    ports:
+      - '5432:5432'
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    container_name: hangman-db
+
+  test-db:
+    image: postgres:13
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: hangman_test_db
+    ports:
+      - '5433:5432'  # Different port for test DB
+    volumes:
+      - test_db_data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    container_name: hangman-test-db
+
+volumes:
+  db_data:
+  test_db_data:
