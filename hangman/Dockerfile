@@ -6,4 +6,4 @@ WORKDIR /app
 
 EXPOSE 3000
 
-CMD ["sh", "-c", "npm install && npm run dev"]
+CMD ["sh", "-c", "npm install && npm audit fix --force && npm run dev"]

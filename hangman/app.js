@@ -4,7 +4,6 @@ const express = require('express');
 const { pool } = require('./db');
 const path = require('path');
 const dotenv = require('dotenv');
-const { isEmailValid } = require('./utils/emailValidator');
 
 // Load environment variables
 dotenv.config();
@@ -29,12 +28,8 @@ const getRandomWord = async () => {
 app.post('/register', async (req, res) => {
   const { username } = req.body;
   try {
-    if (isEmailValid(username)) {
     const result = await pool.query('INSERT INTO users (username) VALUES ($1) RETURNING *', [username]);
     res.status(201).json(result.rows[0]);
-    } else {
-      throw new ValueError('invalid user - must be an email');
-    }
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
